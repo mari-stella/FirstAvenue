@@ -132,7 +132,7 @@ mvn spring-boot:run
 - 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 
 
 ```
-package onlinebookstore;
+package martdelivery;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -142,71 +142,138 @@ import java.util.Date;
 @Table(name="Order_table")
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long orderId;
-    private Long bookId;
+    private Long customerId;
+    private Date orderDate;
+    private Long productId;
     private Integer qty;
     private Integer price;
-    private Integer paymentId;
-    private Long customerId;
-    private Date orderDt;
+    private Integer amt;
+    private String address;
     private String status;
+
+    @PrePersist
+    public void onPrePersist(){
+        // Req/Res Calling
+        boolean bResult = false;
+        try{
+            bResult = OrderApplication.applicationContext.getBean(martdelivery.external.ProductService.class)
+                    .checkAndModifyStock(this.productId, this.qty);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
+        this.amt = qty*price;
+        this.orderDate = new Date();
+
+        if(bResult)
+        {
+            this.status="Ordered";
+        }
+        else
+        {
+            this.status="OutOfStocked";
+        }
+    }
+
+
+    @PostPersist
+    public void onPostPersist(){
+        if(this.status.equals("Ordered"))
+        {
+            Ordered ordered = new Ordered();
+            BeanUtils.copyProperties(this, ordered);
+            ordered.publishAfterCommit();
+            System.out.println("** PUB :: Ordered : orderId="+this.orderId);
+        }
+        else
+        {
+            OutOfStocked outOfStocked = new OutOfStocked();
+            BeanUtils.copyProperties(this, outOfStocked);
+            outOfStocked.publish();
+            System.out.println("** PUB :: OutOfStocked : orderId="+this.orderId);
+        }
+    }
+
+    @PreUpdate
+    public void onPreUpdate(){
+        if(this.status.equals("Order Cancelled"))
+        {
+            System.out.println("** PUB :: OrderCancelled : orderId" + this.orderId);
+            OrderCancelled orderCancelled = new OrderCancelled();
+            BeanUtils.copyProperties(this, orderCancelled);
+            orderCancelled.publishAfterCommit();
+        }
+        else {
+            System.out.println("** PUB :: StatusChanged : status changed to " + this.status.toString());
+            StatusChanged statusChanged = new StatusChanged();
+            BeanUtils.copyProperties(this, statusChanged);
+            statusChanged.publishAfterCommit();
+        }
+    }
 
     public Long getOrderId() {
         return orderId;
     }
-
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }
 
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
-    }
-    public Integer getQty() {
-        return qty;
-    }
-
-    public void setQty(Integer qty) {
-        this.qty = qty;
-    }
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-    public Integer getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(Integer paymentId) {
-        this.paymentId = paymentId;
-    }
     public Long getCustomerId() {
         return customerId;
     }
-
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
-    public Date getOrderDt() {
-        return orderDt;
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
     }
 
-    public void setOrderDt(Date orderDt) {
-        this.orderDt = orderDt;
+    public Long getProductId() {
+        return productId;
     }
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Integer getQty() {
+        return qty;
+    }
+    public void setQty(Integer qty) {
+        this.qty = qty;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Integer getAmt() {
+        return amt;
+    }
+    public void setAmt(Integer amt) {
+        this.amt = amt;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getStatus() {
         return status;
     }
-
     public void setStatus(String status) {
         this.status = status;
     }
@@ -214,28 +281,35 @@ public class Order {
 
 
 ```
-- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (MySQL or h2) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다. (로컬개발환경에서는 MySQL/H2를, 쿠버네티스에서는 SQLServer/H2를 각각 사용하였다)
+
+- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통한 다양한 데이터소스 유형 (MySQL or h2) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위해 Spring Data REST 의 RestRepository 를 적용하였다.
+- (로컬개발환경에서는 MySQL/H2를, 쿠버네티스에서는 SQLServer/H2를 각각 사용하였다)
 ```
-package onlinebookstore;
+package martdelivery;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import java.util.Optional;
 
 @RepositoryRestResource(collectionResourceRel="orders", path="orders")
 public interface OrderRepository extends PagingAndSortingRepository<Order, Long>{
+
+    Optional<Order> findByOrderId(Long orderId);
+
 }
 
 ```
+
 - 적용 후 REST API 의 테스트
 ```
 # Order 서비스의 주문처리
-http POST localhost:8088/orders bookId=1 qty=1 customerId=1
+http POST http://localhost:8088/orders orderId=1 customerId=1 productId=1 qty=1 
 
 # Book 서비스의 재입고
-http PATCH http://localhost:8088/books/reStock bookId=1  stock=1000
+http PATCH http://localhost:8088/products/reStock productId=1  stock=1000
 
 # 주문 상태 확인
-http GET localhost:8088/myPages/
+http GET http://localhost:8088/myPages/
 
 ```
 
