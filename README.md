@@ -315,64 +315,60 @@ http GET http://localhost:8088/myPages/
 
 ## 기능적 요구사항 검증
 
-1. 고객이 도서를 주문한다.
+1. 고객이 상품을 주문한다.
 
---> 정상적으로 주문됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121013903-5e0f7e80-c7d4-11eb-9edf-6c77e4233085.png)
+--> 정상적으로 주문됨을 확인하였음 
+
+![image](https://user-images.githubusercontent.com/84316082/123159460-00ec1c00-d4a8-11eb-946a-bc98e9fdcdb7.png)
+
+2. 주문이 성공하면 배송을 시작한다.
+
+--> 정상적으로 배송 시작됨을 확인하였음 
+
+![image](https://user-images.githubusercontent.com/84316082/123161103-f92d7700-d4a9-11eb-8ed0-00661953c6d9.png)
 
 
-2. 고객이 주문을 취소할 수 있다.
+3. 고객이 주문을 취소할 수 있다.
 
---> 정상적으로 취소됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121015316-d165c000-c7d5-11eb-89ae-4ef61c90adc9.png)
+--> 정상적으로 취소됨을 확인하였음 
 
-
-3. 주문이 성공하면 배송을 시작한다.
-
---> 정상적으로 배송 시작됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121014192-aa5abe80-c7d4-11eb-8b9f-f17e51662769.png)
+![image](https://user-images.githubusercontent.com/84316082/123162383-80c7b580-d4ab-11eb-8fe1-e7e955946e4f.png)
 
 
 4. 주문이 취소되면 배송을 취소한다.
 
---> 주문과 배송 시스템에서 각각 취소되었음을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121015454-f9edba00-c7d5-11eb-885b-af20cf53cd22.png)
+--> 주문과 배송 시스템에서 각각 취소되었음을 확인하였음 
+
+![image](https://user-images.githubusercontent.com/84316082/123162394-86bd9680-d4ab-11eb-929a-075db473059e.png)
 
 
-5. 관리자가 신규도서를 등록한다.
+5. 관리자가 신규 상품을 등록한다.
 
 --> 정상적으로 등록됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121013489-d7f33800-c7d3-11eb-8c46-3e40e5fc6be3.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123150399-47884900-d49d-11eb-9883-6dfa3632353d.png)
 
 
-6. 관리자가 도서 재고를 추가한다.
+6. 관리자가 상품 재고를 추가한다.
 
 --> 정상적으로 재고가 늘어남을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121015711-41744600-c7d6-11eb-96da-c11b1a800f93.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123150634-90400200-d49d-11eb-80ca-5d1febf91222.png)
+![image](https://user-images.githubusercontent.com/84316082/123150697-9e8e1e00-d49d-11eb-8ddb-9abde294b894.png)
 
 
 7. 고객은 회원가입을 한다.
 
 --> 정상적으로 등록됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121013551-eccfcb80-c7d3-11eb-99e9-5946cf5cf5bd.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123151952-fa0cdb80-d49e-11eb-9406-c839f27d1754.png)
 
 
-8. 도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
+8. 신규 상품이 등록되면 고객에게 알려준다.
 
---> 주문했던 고객의 등급과 마일리지가 올라간 것을 알 수 있다.
-![image](https://user-images.githubusercontent.com/20077391/121014460-f7d72b80-c7d4-11eb-8b35-6e3a8ffa08bc.png)
+--> EMAIL이 발송됨을 확인하였음 
 
-
-9. 신규 도서가 등록되면 기존 고객에게 알려준다.
-
---> SNS가 발송됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121014951-7633cd80-c7d5-11eb-94f1-cf704f4a9fc1.png)
-
-
-10. 도서가 재입고되면 재고부족으로 못 구매한 고객에게 알려준다.
-
---> SNS가 발송됨을 확인하였음
-![image](https://user-images.githubusercontent.com/20077391/121015814-6072d800-c7d6-11eb-9786-c02c5a48189b.png)
+![image](https://user-images.githubusercontent.com/84316082/123155686-5c67db00-d4a3-11eb-8009-1dc1ebf69745.png)
 
 
 ## 비기능적 요구사항 검증
@@ -382,13 +378,17 @@ http GET http://localhost:8088/myPages/
 주문 시 재고가 부족할 경우 주문이 되지 않는다. (Sync 호출)
 
 --> 재고보다 많은 양(qty)을 주문하였을 경우 OutOfStock으로 처리한다.
-![image](https://user-images.githubusercontent.com/20077391/121017541-59e56000-c7d8-11eb-8dc0-54e38c3f5872.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123158296-91296180-d4a6-11eb-8c64-9c3135245b81.png)
+![image](https://user-images.githubusercontent.com/84316082/123158316-99819c80-d4a6-11eb-8c54-19e2c572ec8b.png)
+
 
 
 2. 장애격리
 고객/고객센터/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다 Async (event-driven), Eventual Consistency
 
 --> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
+
 ![image](https://user-images.githubusercontent.com/20077391/121018620-9a91a900-c7d9-11eb-89fc-bdd37313434e.png)
 ![image](https://user-images.githubusercontent.com/20077391/121018208-25be6f00-c7d9-11eb-8b1a-106718b53453.png)
 
