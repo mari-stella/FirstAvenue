@@ -35,14 +35,14 @@
 
 ## 기능적 요구사항
 1. 고객이 상품 주문을 한다.
-2. 고객이 결제를 한다.
-3. 결제된 주문은 배달이 시작된다.
+2. 완료된 주문은 배달이 시작된다.
 4. 고객이 주문을 취소할 수 있다.
 6. 주문이 취소되면 배달이 취소된다.
 7. 관리자가 신규상품을 등록한다.
 8. 관리자가 상품 재고를 추가한다.
 9. 고객은 회원가입을 한다.
 10. 고객은 주문내역을 조회한다.
+11. 신규상품이 등록되면 고객에게 알림을 준다.
 
 ## 비기능적 요구사항
 1. 트랜잭션
@@ -67,47 +67,34 @@
 
 
 ### 완성된 1차 모형
-
-![image](https://user-images.githubusercontent.com/9324206/118837153-8146bc80-b8ff-11eb-8062-360768763a8d.png)
+![image](https://user-images.githubusercontent.com/84316082/123119997-f23d3f00-d47e-11eb-845b-17d6cf1a6f40.png)
 
 ### 1차 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
+![image](https://user-images.githubusercontent.com/84316082/123120594-67107900-d47f-11eb-9134-4ffa3d4118f3.png)
 
-![image](https://user-images.githubusercontent.com/9324206/118841865-a63d2e80-b903-11eb-90ed-e044f2feb128.png)
-
-    1. 고객이 도서를 주문한다.
-    2. 고객이 주문을 취소할 수 있다.
-    3. 주문이 성공하면 배송을 시작한다.
+    1. 고객이 상품을 주문한다
+    2. 주문이 성공하면 배송을 시작한다.
+    3. 고객이 주문을 취소할 수 있다.
     4. 주문이 취소되면 배송을 취소한다.
 
-![image](https://user-images.githubusercontent.com/9324206/118842116-e13f6200-b903-11eb-899b-b415d084e314.png)
+![image](https://user-images.githubusercontent.com/84316082/123120859-a17a1600-d47f-11eb-8c34-26515d75f7cc.png)
 
-    1. 관리자가 신규도서를 등록한다.
-    2. 신규 도서가 등록되면 기존 고객에게 알려준다.
-    3. 관리자는 도서 재고를 추가한다.
-    4. 도서 재고가 추가되면 재고부족으로 못 구매한 고객에게 알려준다.
-    
-![image](https://user-images.githubusercontent.com/9324206/118843424-02ed1900-b905-11eb-9f30-502574dc47cc.png)
+    1. 관리자가 신규상품을 등록한다.
+    2. 신규 상품이 등록되면 고객에게 알려준다.
+    3. 관리자는 상품 재고를 추가한다.
 
-    1. 고객은 회원가입을 한다.
-    2. 도서 주문 실적에 따라 고객의 마일리지 및 등급을 관리한다.
-    
     
 ### 비기능 요구사항에 대한 검증
-
-![image](https://user-images.githubusercontent.com/9324206/118844711-249ad000-b906-11eb-9e37-42863a2b27ca.png)
+![image](https://user-images.githubusercontent.com/84316082/123121636-4b59a280-d480-11eb-9dbd-1d114ad1d562.png)
 
     1. 신규 주문이 들어올 시 재고를 Sync 호출을 통해 확인하여 결과에 따라 주문 성공 여부가 결정.
-    2. 고객/마케팅/배달 각각의 기능은 Async (event-driven) 방식으로 통신, 장애 격리가 가능.
+    2. 고객/고객센터/배달 각각의 기능은 Async (event-driven) 방식으로 통신, 장애 격리가 가능.
     3. MyPage 를 통해 고객이 주문의 상태를 확인.
-    
-### 최종 완성된 모형
-
-![image](https://user-images.githubusercontent.com/20077391/121104501-24269280-c83d-11eb-9f13-dc342d695069.png)
 
 
 ## 헥사고날 아키텍처 다이어그램 도출
 
-![image](https://user-images.githubusercontent.com/84316082/120965636-238bee80-c7a0-11eb-80b4-f22239207caa.png)
+![image](https://user-images.githubusercontent.com/84316082/123121914-85c33f80-d480-11eb-9272-960ff104dcba.png)
     
     - Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
     - 호출관계에서 PubSub 과 Req/Resp 를 구분함
@@ -116,13 +103,14 @@
 
 # 구현:
 
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 
+구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 808n 이다)
 
 ```
 cd gateway
 mvn spring-boot:run
 
-cd Book
+cd Product
 mvn spring-boot:run 
 
 cd customer
@@ -140,7 +128,8 @@ mvn spring-boot:run
 
 ## DDD 의 적용
 
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 Order 마이크로 서비스). 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 Order 마이크로 서비스). 
+- 이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하려고 노력했다. 
 
 ```
 package onlinebookstore;
