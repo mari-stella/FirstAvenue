@@ -388,9 +388,9 @@ http GET http://localhost:8088/myPages/
 고객/고객센터/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다 Async (event-driven), Eventual Consistency
 
 --> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
+![image](https://user-images.githubusercontent.com/84316082/123169288-0bacae00-d4b4-11eb-8aad-23bb6d3a506e.png
+![image](https://user-images.githubusercontent.com/84316082/123169313-16674300-d4b4-11eb-8f2a-fcda625147a4.png)
 
-![image](https://user-images.githubusercontent.com/20077391/121018620-9a91a900-c7d9-11eb-89fc-bdd37313434e.png)
-![image](https://user-images.githubusercontent.com/20077391/121018208-25be6f00-c7d9-11eb-8b1a-106718b53453.png)
 
 
 3. 재고시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다 Circuit breaker, fallback
@@ -400,10 +400,10 @@ http GET http://localhost:8088/myPages/
 ## Saga
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
 [Publish]
-![image](https://user-images.githubusercontent.com/20077391/121020310-353eb780-c7db-11eb-9e6e-2a0b0f9917e2.png)
+![image](https://user-images.githubusercontent.com/84316082/123169413-3c8ce300-d4b4-11eb-9058-6953077c7ae1.png)
 
 [Subscribe]
-![image](https://user-images.githubusercontent.com/20077391/121099508-ede41580-c832-11eb-826d-6f4d395193b0.png)
+![image](https://user-images.githubusercontent.com/84316082/123169558-66460a00-d4b4-11eb-9cae-6c7a0db7c863.png)
 
 
 ## CQRS
@@ -414,16 +414,13 @@ Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원�
 CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스의 접근없이 CustomerCenter의 마이페이지를 통해 조회할 수 있도록 구현하였다.
 
 - 주문(ordered) 실행 후 myPage 화면
-
-![image](https://user-images.githubusercontent.com/20077391/121016627-4f769680-c7d7-11eb-8f60-f9640223c1ec.png)
-
+![image](https://user-images.githubusercontent.com/84316082/123170923-0e100780-d4b6-11eb-858a-50b1d17058bc.png)
 
 - 주문취소(OrderCancelled) 후 myPage 화면
+![image](https://user-images.githubusercontent.com/84316082/123170983-254ef500-d4b6-11eb-852a-cda6066f319d.png)
 
-![image](https://user-images.githubusercontent.com/20077391/120961678-3d760300-c799-11eb-829c-16f296d61f27.png)
 
-
-위와 같이 주문을 하게되면 Order -> Book -> Order -> Delivery 로 주문이 Assigend 되고
+위와 같이 주문을 하게되면 Order -> Product -> Order -> Delivery 로 주문이 Assigend 되고
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
 
