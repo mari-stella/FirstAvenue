@@ -48,9 +48,8 @@
 1. 트랜잭션
     1. 주문 시 재고가 부족할 경우 주문이 되지 않는다. (Sync 호출)
 1. 장애격리
-    1. 고객/마케팅/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
+    1. 고객/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다  Async (event-driven), Eventual Consistency
     2. 재고시스템이 과중되면 사용자를 잠시동안 받지 않고 재접속하도록 유도한다  Circuit breaker, fallback
-
 
 
 # 분석/설계
@@ -61,10 +60,10 @@
 
 
 ### 이벤트 도출
-![image](https://user-images.githubusercontent.com/84316082/123100644-3ffd7b80-d46e-11eb-884e-58f4d5aaf63f.png)
+![image](https://user-images.githubusercontent.com/84316082/123109445-35df7b00-d476-11eb-9e51-9049d2cdb6fe.png)
 
 ### 부적격 이벤트 탈락
-![image](https://user-images.githubusercontent.com/84316082/123100769-5dcae080-d46e-11eb-90b1-0dc2cdd71091.png)
+![image](https://user-images.githubusercontent.com/84316082/123109510-4263d380-d476-11eb-907c-eda383047a3b.png)
 
 
 ### 완성된 1차 모형
