@@ -66,7 +66,7 @@
 ![image](https://user-images.githubusercontent.com/84316082/123109510-4263d380-d476-11eb-907c-eda383047a3b.png)
 
 ### 액터, Command 부착
-![image](https://user-images.githubusercontent.com/84316082/123292240-d18fea80-d54d-11eb-858e-9757855a5099.png
+![image](https://user-images.githubusercontent.com/84316082/123292240-d18fea80-d54d-11eb-858e-9757855a5099.png)
 
 ### 어그리게잇 묶기
 
