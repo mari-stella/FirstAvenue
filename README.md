@@ -958,7 +958,7 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Product 호출�
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123257401-0fc8e200-d52d-11eb-89ba-dde143c3f4ed.png)
+![image](https://user-images.githubusercontent.com/84316082/123258050-e52b5900-d52d-11eb-84f6-91f16f22e03f.png)
 
 
 일정시간 뒤에는 다시 주문이 정상적으로 수행되는 것을 알 수 있다.
