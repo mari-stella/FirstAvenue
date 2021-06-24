@@ -1060,6 +1060,7 @@ onlinebookstore/delivery/kubernetes/deployment.yml
 ![image](https://user-images.githubusercontent.com/84316082/123255059-5e28b180-d52a-11eb-894b-3a8008637969.png)
 
 - Liveness 확인 실패에 따른 retry발생 확인
+
 ![image](https://user-images.githubusercontent.com/84316082/123255495-e1e29e00-d52a-11eb-9cb4-788141627c39.png)
 
 
