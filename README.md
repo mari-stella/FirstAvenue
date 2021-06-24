@@ -951,19 +951,19 @@ kubectl create configmap resturl --from-literal=url=http://Product:8080
 
 * 서킷 브레이커 동작 확인:
 
-bookId가 1번 인 경우 정상적으로 주문 처리 완료
+productId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=1 qty=1
 ```
 ![image](https://user-images.githubusercontent.com/84316082/123257862-aa292580-d52d-11eb-851e-22659a225f60.png)
 
-bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
+productId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=2 qty=1
 ```
 ![image](https://user-images.githubusercontent.com/84316082/123257734-8534b280-d52d-11eb-939f-aed39597c35c.png)
 
-time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Product 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
+timeout이 연달아 2번 발생한 경우 CB가 OPEN되어 Product 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
 
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
@@ -1059,7 +1059,7 @@ kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.
 
 - Self-healing 확인을 위한 Liveness Probe 옵션 변경 (Port 변경)
 
-onlinebookstore/delivery/kubernetes/deployment.yml
+martdelivery/Delivery/kubernetes/deployment.yml
 
 ![image](https://user-images.githubusercontent.com/84316082/123256488-fd01dd80-d52b-11eb-9248-b1b2ca5d639f.png)
 
