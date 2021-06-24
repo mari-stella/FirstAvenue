@@ -1067,7 +1067,7 @@ martdelivery/Delivery/kubernetes/deployment.yml
 - Delivery pod에 Liveness Probe 옵션 적용 확인
 
 ![image](https://user-images.githubusercontent.com/84316082/123254979-47825a80-d52a-11eb-8bea-17038be3e535.png)
-![image](https://user-images.githubusercontent.com/84316082/123256424-e8bde080-d52b-11eb-95f7-e73b361ac1a3.png)
+![image](https://user-images.githubusercontent.com/84316082/123282839-cf299280-d545-11eb-9a8f-f976a983c8c9.png)
 
 - Liveness 확인 실패에 따른 retry발생 확인
 
