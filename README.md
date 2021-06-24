@@ -1000,7 +1000,7 @@ kubectl get deploy -l app=order -w
 
 - 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다.
 
-![image](https://user-images.githubusercontent.com/84316082/123237076-4d6f4000-d518-11eb-8127-9876f9ea79fb.png)
+![image](https://user-images.githubusercontent.com/84316082/123238006-1cdbd600-d519-11eb-8c9c-2c39c7a17593.png)
 
 
 - siege 의 로그를 보면 오토스케일 확장이 일어나며 주문을 100% 처리완료한 것을 알 수 있었다.
@@ -1013,48 +1013,35 @@ kubectl get deploy -l app=order -w
 ## Zero-downtime deploy (Readiness Probe) 무정지 재배포
 
 * Zero-downtime deploy를 위해 readiness Probe를 설정함
-![image](https://user-images.githubusercontent.com/20077391/121024696-6e792680-c7df-11eb-8cc3-ad8e1cbda949.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123239974-da1afd80-d51a-11eb-9a9e-3a9b5dd8f9ad.png)
 
 
 * Zero-downtime deploy 확인을 위해 seige 로 1명이 지속적인 고객등록 작업을 수행함
 ```
-siege -c1 -t180S -r100 --content-type "application/json" 'http://localhost:8080/customers POST {"name": "CUSTOMER99","email":"CUSTOMER99@onlinebookstore.com"}'
+siege -c1 -t120S -r100 --content-type "application/json" 'http://10.0.234.253:8080/customers POST {"loginId": "testasb3","password":"112233", "email":"testasb3@firstavn.com"}'
 ```
 
 먼저 customer 이미지가 v1.0 임을 확인
-![image](https://user-images.githubusercontent.com/20077391/120979102-31e20680-c7b0-11eb-8bb6-53481781e62c.png)
+![image](https://user-images.githubusercontent.com/84316082/123240330-2e25e200-d51b-11eb-9e51-7b56f1da6aed.png)
+
 
 새 버전으로 배포(이미지를 v2.0으로 변경)
 ```
-kubectl set image deployment customer customer=skccteam2acr.azurecr.io/customer:v2.0
+kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.0
 ```
 
 customer 이미지가 변경되는 과정 (POD 상태변화)
-![image](https://user-images.githubusercontent.com/20077391/120978979-0bbc6680-c7b0-11eb-91e9-7317f2b15ee8.png)
+![image](https://user-images.githubusercontent.com/84316082/123241352-06834980-d51c-11eb-975e-ed13913bc751.png)
+
 
 
 customer 이미지가 v2.0으로 변경되었임을 확인
-![image](https://user-images.githubusercontent.com/20077391/120979060-27c00800-c7b0-11eb-8915-93197a3174b5.png)
+![image](https://user-images.githubusercontent.com/84316082/123241412-1ac74680-d51c-11eb-9ed9-658426dbe6ff.png)
+
 
 - seige 의 화면으로 넘어가서 Availability가 100% 인지 확인 (무정지 배포 성공)
-```
-** SIEGE 4.0.4
-** Preparing 1 concurrent users for battle.
-The server is now under siege...
-Lifting the server siege...
-Transactions:                  15793 hits
-Availability:                 100.00 %
-Elapsed time:                 179.41 secs
-Data transferred:               3.31 MB
-Response time:                  0.01 secs
-Transaction rate:              88.03 trans/sec
-Throughput:                     0.02 MB/sec
-Concurrency:                    0.99
-Successful transactions:           0
-Failed transactions:               0
-Longest transaction:            0.29
-Shortest transaction:           0.00
-```
+![image](https://user-images.githubusercontent.com/84316082/123242162-b658b700-d51c-11eb-9191-cd8735656d7b.png)
 
 
 # Self-healing (Liveness Probe)
