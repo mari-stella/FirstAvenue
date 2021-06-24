@@ -908,7 +908,7 @@ kubectl create configmap resturl --from-literal=url=http://Product:8080
 - 쿠버네티스에서는 다음과 같이 Secret object를 생성하였다.
 
 ![image](https://user-images.githubusercontent.com/84316082/123191851-d23c6880-d4dc-11eb-81ad-80c57c07fcb6.png)
-
+![image](https://user-images.githubusercontent.com/84316082/123230778-899fa200-d512-11eb-8aa2-e82c1dd834d5.png)
 
 ## Circuit Breaker와 Fallback 처리
 
@@ -942,24 +942,29 @@ kubectl create configmap resturl --from-literal=url=http://Product:8080
 
 bookId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
-# http POST http://52.141.32.129:8080/orders bookId=1 customerId=4 qty=1
+# http POST http://52.231.54.4:8080/orders  customerId=1 productId=1 qty=1
 ```
-![image](https://user-images.githubusercontent.com/20077391/120970620-a152f880-c7a6-11eb-843a-855d85678638.png)
+![image](https://user-images.githubusercontent.com/84316082/123231413-24987c00-d513-11eb-91fe-49507a9d33bf.png)
 
 bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
 ```
-# http POST http://52.141.32.129:8080/orders bookId=2 customerId=4 qty=1
+# http POST http://52.231.54.4:8080/orders  customerId=1 productId=2 qty=1
 ```
-![image](https://user-images.githubusercontent.com/20077391/120970699-bcbe0380-c7a6-11eb-8c71-ad71101ca1dc.png)
+![image](https://user-images.githubusercontent.com/84316082/123231573-48f45880-d513-11eb-90ef-ce9a4563752a.png)
 
 time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
 
-![image](https://user-images.githubusercontent.com/20077391/120970889-fabb2780-c7a6-11eb-9ab9-e44700c270a7.png)
+```
+# http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
+```
+![image](https://user-images.githubusercontent.com/84316082/123231625-56a9de00-d513-11eb-9652-33d0bcfcbefb.png)
 
 
 일정시간 뒤에는 다시 주문이 정상적으로 수행되는 것을 알 수 있다.
-
-![image](https://user-images.githubusercontent.com/20077391/120973450-ea587c00-c7a9-11eb-863b-f15dda3bdaa9.png)
+```
+# http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
+```
+![image](https://user-images.githubusercontent.com/84316082/123231785-793bf700-d513-11eb-9496-fa188f6fd942.png)
 
 
 - 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 Thread 자원 등을 보호하고 있음을 보여줌.
@@ -984,7 +989,7 @@ deployment.yml
 
 - 100명이 60초 동안 주문을 넣어준다.
 ```
-siege -c100 -t60S -r10 --content-type "application/json" 'http://52.141.32.129:8080/orders POST {"bookId":"1","customerId":"1","qty":"1"}
+siege  -c100 -t60S  -v --content-type "application/json" 'http://10.0.110.238:8080/orders POST {"customerId":"1" ,"productId": "1", "qty":1}'
 ```
 
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
@@ -994,27 +999,13 @@ kubectl get deploy -l app=order -w
 
 - 어느정도 시간이 흐른 후 스케일 아웃이 벌어지는 것을 확인할 수 있다.
 
-![image](https://user-images.githubusercontent.com/20077391/120974885-9babe180-c7ab-11eb-9a84-07bfb408ed34.png)
+![image](https://user-images.githubusercontent.com/84316082/123237076-4d6f4000-d518-11eb-8127-9876f9ea79fb.png)
+
 
 - siege 의 로그를 보면 오토스케일 확장이 일어나며 주문을 100% 처리완료한 것을 알 수 있었다.
-```
-** SIEGE 4.0.4
-** Preparing 100 concurrent users for battle.
-The server is now under siege...
-Lifting the server siege...
-Transactions:                   2904 hits
-Availability:                 100.00 %        
-Elapsed time:                  59.64 secs     
-Data transferred:               0.90 MB       
-Response time:                  2.02 secs     
-Transaction rate:              48.69 trans/sec
-Throughput:                     0.02 MB/sec   
-Concurrency:                   98.52
-Successful transactions:        2904
-Failed transactions:               0
-Longest transaction:           13.62
-Shortest transaction:           0.11
-```
+
+![image](https://user-images.githubusercontent.com/84316082/123237254-77c0fd80-d518-11eb-8c7b-2a68fb84504b.png)
+
 
 
 
