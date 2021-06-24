@@ -388,6 +388,7 @@ http GET http://localhost:8088/myPages
 고객/고객센터/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다 Async (event-driven), Eventual Consistency
 
 --> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
+
 ![image](https://user-images.githubusercontent.com/84316082/123169288-0bacae00-d4b4-11eb-8aad-23bb6d3a506e.png
 ![image](https://user-images.githubusercontent.com/84316082/123169313-16674300-d4b4-11eb-8f2a-fcda625147a4.png)
 
