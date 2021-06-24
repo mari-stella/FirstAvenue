@@ -305,7 +305,7 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 # Order 서비스의 주문처리
 http POST http://localhost:8088/orders orderId=1 customerId=1 productId=1 qty=1 
 
-# Book 서비스의 재입고
+# Product 서비스의 재입고
 http PATCH http://localhost:8088/products/reStock productId=1  stock=1000
 
 # 주문 상태 확인
@@ -532,12 +532,12 @@ server:
 ## Polyglot
 
 각 마이크로서비스의 다양한 요구사항에 능동적으로 대처하고자 최적의 구현언어 및 DBMS를 선택할 수 있다.
-OnlineBookStore에서는 다음과 같이 2가지 DBMS를 적용하였다.
-- MySQL(쿠버네티스에서는 SQLServer) : Product, CustomerCenter, Customer, Delivery
-- H2    : Order
+firstAvenue 에서는 다음과 같이 2가지 DBMS를 적용하였다.
+- MySQL(쿠버네티스에서는 SQLServer) : Product
+- H2    : CustomerCenter, Customer, Delivery, Order
 
 ```
-# (Product, CustomerCenter, Customer, Delivery) application.yml
+# (Product) application.yml
 
 spring:
   profiles: default
@@ -550,26 +550,27 @@ spring:
   profiles: docker
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=bookstore;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    url: jdbc:sqlserver://skccteam2.database.windows.net:1433;database=firstavn;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
     username: ${SQLSERVER_USERNAME}
     password: ${SQLSERVER_PASSWORD}
 ...
 
-# (Order) application.yml
+# (Order, CustomerCenter, Customer, Delivery) application.yml
 
 spring:
   profiles: default
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:/data/orderdb
+    url: jdbc:h2:file:/data/orderdb  # customercenterdb , customer, delivery
     username: *****
     password: 
+    
 ```
 
 
 ## 동기식 호출(Req/Resp) 패턴
 
-분석단계에서의 조건 중 하나로 주문(Order)->책 재고 확인(Book) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
+분석단계에서의 조건 중 하나로 주문(Order)-> 상품재고 확인(Product) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 
 호출 프로토콜은 RestController를 FeignClient 를 이용하여 호출하도록 한다. 
 
 - 재고 확인 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
@@ -595,7 +596,7 @@ public interface ProductService {
 
 - 주문을 받은 직후 재고(Product) 확인을 요청하도록 처리
 ```
-# ProductController.java
+# (Product) ProductController.java
 
 package martdelivery;
 
@@ -642,10 +643,19 @@ import java.util.Optional;
 
 ```
 # 상품 관리 (Product) 서비스를 잠시 내려놓음 (ctrl+c)
+![image](https://user-images.githubusercontent.com/84316082/123263330-cfb92d80-d533-11eb-9429-f1702ebec27d.png)
 
 #주문처리
+- Fallback 처리로 인해 status가 OutOfStocked 로 보여짐(주문실패)
+```
 http POST http://localhost:8088/orders  customerId=1 productId=2 qty=1   #Fail
+```
+![image](https://user-images.githubusercontent.com/84316082/123263101-9254a000-d533-11eb-8d70-1ef237c7b697.png)
+```
 http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Fail
+```
+![image](https://user-images.githubusercontent.com/84316082/123263159-a1d3e900-d533-11eb-9a24-d0ca5a6b975a.png)
+
 
 #재고 관리 서비스 재기동
 cd Product
