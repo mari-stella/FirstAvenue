@@ -945,7 +945,7 @@ bookId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=1 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123257610-5b7b8b80-d52d-11eb-9a5d-04a4bfa3ae6a.png)
+![image](https://user-images.githubusercontent.com/84316082/123257862-aa292580-d52d-11eb-851e-22659a225f60.png)
 
 bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
 ```
