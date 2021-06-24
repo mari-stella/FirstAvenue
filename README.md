@@ -1022,25 +1022,26 @@ kubectl get deploy -l app=order -w
 siege -c1 -t120S -r100 --content-type "application/json" 'http://10.0.234.253:8080/customers POST {"loginId": "testasb3","password":"112233", "email":"testasb3@firstavn.com"}'
 ```
 
-먼저 customer 이미지가 v1.0 임을 확인
+- 먼저 customer 이미지가 v1.0 임을 확인
 ![image](https://user-images.githubusercontent.com/84316082/123240330-2e25e200-d51b-11eb-9e51-7b56f1da6aed.png)
 
 
-새 버전으로 배포(이미지를 v2.0으로 변경)
+- 새 버전으로 배포(이미지를 v2.0으로 변경)
 ```
 kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.0
 ```
 
-customer 이미지가 변경되는 과정 (POD 상태변화)
+- customer 이미지가 변경되는 과정 (POD 상태변화)
 ![image](https://user-images.githubusercontent.com/84316082/123241352-06834980-d51c-11eb-975e-ed13913bc751.png)
 
 
 
-customer 이미지가 v2.0으로 변경되었임을 확인
+- customer 이미지가 v2.0으로 변경되었임을 확인
 ![image](https://user-images.githubusercontent.com/84316082/123241412-1ac74680-d51c-11eb-9ed9-658426dbe6ff.png)
 
 
 - seige 의 화면으로 넘어가서 Availability가 100% 인지 확인 (무정지 배포 성공)
+
 ![image](https://user-images.githubusercontent.com/84316082/123242162-b658b700-d51c-11eb-9191-cd8735656d7b.png)
 
 
@@ -1050,18 +1051,17 @@ customer 이미지가 v2.0으로 변경되었임을 확인
 
 onlinebookstore/delivery/kubernetes/deployment.yml
 
-![image](https://user-images.githubusercontent.com/20077391/120980312-7621d680-c7b1-11eb-885f-cd9bc9a9011f.png)
+![image](https://user-images.githubusercontent.com/84316082/123253869-eb6b0680-d528-11eb-9e15-b2e13f13c9d0.png)
 
 
 - Delivery pod에 Liveness Probe 옵션 적용 확인
 
-![image](https://user-images.githubusercontent.com/20077391/120981097-458e6c80-c7b2-11eb-9a3c-d17396a59048.png)
+![image](https://user-images.githubusercontent.com/84316082/123254979-47825a80-d52a-11eb-8bea-17038be3e535.png)
 
 
 - Liveness 확인 실패에 따른 retry발생 확인
 
-![image](https://user-images.githubusercontent.com/20077391/120981283-7e2e4600-c7b2-11eb-92ef-2d5e4f2837eb.png)
-
+![image](https://user-images.githubusercontent.com/84316082/123255059-5e28b180-d52a-11eb-894b-3a8008637969.png)
 
 
 이상으로 12가지 체크포인트가 구현 및 검증 완료되었음 확인하였다.
