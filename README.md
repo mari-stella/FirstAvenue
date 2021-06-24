@@ -1023,7 +1023,7 @@ siege -c1 -t120S -r100 --content-type "application/json" 'http://10.0.234.253:80
 ```
 
 - 먼저 customer 이미지가 v1.0 임을 확인
-![image](https://user-images.githubusercontent.com/84316082/123240330-2e25e200-d51b-11eb-9e51-7b56f1da6aed.png)
+![image](https://user-images.githubusercontent.com/84316082/123256732-42260f80-d52c-11eb-9f48-ab52c57b348c.png)
 
 
 - 새 버전으로 배포(이미지를 v2.0으로 변경)
@@ -1037,12 +1037,11 @@ kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.
 
 
 - customer 이미지가 v2.0으로 변경되었임을 확인
-![image](https://user-images.githubusercontent.com/84316082/123241412-1ac74680-d51c-11eb-9ed9-658426dbe6ff.png)
+![image](https://user-images.githubusercontent.com/84316082/123256644-29b5f500-d52c-11eb-827f-fb5e7b432678.png)
 
 
 - seige 의 화면으로 넘어가서 Availability가 100% 인지 확인 (무정지 배포 성공)
-
-![image](https://user-images.githubusercontent.com/84316082/123242162-b658b700-d51c-11eb-9191-cd8735656d7b.png)
+![image](https://user-images.githubusercontent.com/84316082/123256561-1014ad80-d52c-11eb-85cc-3859703f647b.png)
 
 
 # Self-healing (Liveness Probe)
@@ -1051,18 +1050,17 @@ kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.
 
 onlinebookstore/delivery/kubernetes/deployment.yml
 
-![image](https://user-images.githubusercontent.com/84316082/123253869-eb6b0680-d528-11eb-9e15-b2e13f13c9d0.png)
+![image](https://user-images.githubusercontent.com/84316082/123256488-fd01dd80-d52b-11eb-9248-b1b2ca5d639f.png)
 
 
 - Delivery pod에 Liveness Probe 옵션 적용 확인
 
 ![image](https://user-images.githubusercontent.com/84316082/123254979-47825a80-d52a-11eb-8bea-17038be3e535.png)
-![image](https://user-images.githubusercontent.com/84316082/123255059-5e28b180-d52a-11eb-894b-3a8008637969.png)
+![image](https://user-images.githubusercontent.com/84316082/123256424-e8bde080-d52b-11eb-95f7-e73b361ac1a3.png)
 
 - Liveness 확인 실패에 따른 retry발생 확인
 
-![image](https://user-images.githubusercontent.com/84316082/123255495-e1e29e00-d52a-11eb-9cb4-788141627c39.png)
-
+![image](https://user-images.githubusercontent.com/84316082/123255713-2110ef00-d52b-11eb-9c6e-3eb243872889.png)
 
 
 이상으로 12가지 체크포인트가 구현 및 검증 완료되었음 확인하였다.
