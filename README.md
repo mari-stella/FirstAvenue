@@ -309,7 +309,7 @@ http POST http://localhost:8088/orders orderId=1 customerId=1 productId=1 qty=1
 http PATCH http://localhost:8088/products/reStock productId=1  stock=1000
 
 # 주문 상태 확인
-http GET http://localhost:8088/myPages/
+http GET http://localhost:8088/myPages
 
 ```
 
@@ -397,6 +397,7 @@ http GET http://localhost:8088/myPages/
 
 --> 뒤의 Hystrix를 통한 Circuit Break 구현에서 검증하도록 한다.
 
+
 ## Saga
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
 [Publish]
@@ -414,9 +415,11 @@ Materialized View 를 구현하여, 타 마이크로서비스의 데이터 원�
 CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스의 접근없이 CustomerCenter의 마이페이지를 통해 조회할 수 있도록 구현하였다.
 
 - 주문(ordered) 실행 후 myPage 화면
+
 ![image](https://user-images.githubusercontent.com/84316082/123170923-0e100780-d4b6-11eb-858a-50b1d17058bc.png)
 
 - 주문취소(OrderCancelled) 후 myPage 화면
+
 ![image](https://user-images.githubusercontent.com/84316082/123170983-254ef500-d4b6-11eb-852a-cda6066f319d.png)
 
 
@@ -426,39 +429,43 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 
 ## Correlation 
 각 이벤트 건(메시지)이 어떤 Policy를 처리할 때 어떤건에 연결된 처리건인지를 구별하기 위한 Correlation-key를 제대로 연결하였는지를 검증하였다.
-![image](https://user-images.githubusercontent.com/20077391/121104779-b333aa80-c83d-11eb-9110-e56c6be57c86.png)
+![image](https://user-images.githubusercontent.com/84316082/123184000-bed5d100-d4cd-11eb-9fba-3d6e11b64208.png)
+
 
 ## GateWay 
 API GateWay를 통하여 마이크로 서비스들의 진입점을 통일할 수 있다.
 다음과 같이 GateWay를 적용하여 모든 마이크로서비스들은 http://localhost:8088/{context}로 접근할 수 있다.
 
-``` (gateway) application.yaml
+(gateway) application.yaml
+``` 
 
 server:
   port: 8088
+
 ---
+
 spring:
   profiles: default
   cloud:
     gateway:
       routes:
-        - id: CustomerCenter
+        - id: Product
           uri: http://localhost:8081
           predicates:
-            - Path= /myPages/**
-        - id: Book
-          uri: http://localhost:8082
-          predicates:
-            - Path=/books/** 
+            - Path=/products/** 
         - id: Order
-          uri: http://localhost:8083
+          uri: http://localhost:8082
           predicates:
             - Path=/orders/** 
         - id: Delivery
-          uri: http://localhost:8084
+          uri: http://localhost:8083
           predicates:
             - Path=/deliveries/** 
-        - id: customer
+        - id: CustomerCenter
+          uri: http://localhost:8084
+          predicates:
+            - Path= /marketing/**,/myPages/**
+        - id: Customer
           uri: http://localhost:8085
           predicates:
             - Path=/customers/** 
@@ -472,20 +479,19 @@ spring:
             allowedHeaders:
               - "*"
             allowCredentials: true
+
+
 ---
+
 spring:
   profiles: docker
   cloud:
     gateway:
       routes:
-        - id: customercenter
-          uri: http://customercenter:8080
+        - id: Product
+          uri: http://Product:8080
           predicates:
-            - Path= /marketingTargets/**,/outOfStockOrders/**,/myPages/**
-        - id: Book
-          uri: http://Book:8080
-          predicates:
-            - Path=/books/** 
+            - Path=/products/** 
         - id: Order
           uri: http://Order:8080
           predicates:
@@ -494,8 +500,12 @@ spring:
           uri: http://Delivery:8080
           predicates:
             - Path=/deliveries/** 
-        - id: customer
-          uri: http://customer:8080
+        - id: CustomerCenter
+          uri: http://CustomerCenter:8080
+          predicates:
+            - Path= /marketing/**,/myPages/**
+        - id: Customer
+          uri: http://Customer:8080
           predicates:
             - Path=/customers/** 
       globalcors:
@@ -518,19 +528,18 @@ server:
 
 각 마이크로서비스의 다양한 요구사항에 능동적으로 대처하고자 최적의 구현언어 및 DBMS를 선택할 수 있다.
 OnlineBookStore에서는 다음과 같이 2가지 DBMS를 적용하였다.
-- MySQL(쿠버네티스에서는 SQLServer) : Book, CustomerCenter, Customer, Delivery
+- MySQL(쿠버네티스에서는 SQLServer) : Product, CustomerCenter, Customer, Delivery
 - H2    : Order
 
 ```
-# (Book, CustomerCenter, Customer, Delivery) application.yml
+# (Product, CustomerCenter, Customer, Delivery) application.yml
 
 spring:
   profiles: default
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bookdb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: *****
-    password: *****
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/productDB?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  username: ******
+  password: ****
 
 spring:
   profiles: docker
@@ -561,75 +570,88 @@ spring:
 - 재고 확인 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
-# (Order) BookService.java
+# (Order) ProductService.java
 
+package martdelivery.external;
 
-package onlinebookstore.external;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name="Book", url="${api.url.book}")
-public interface BookService {
+import java.util.Date;
 
-    @RequestMapping(method= RequestMethod.GET, path="/books/chkAndModifyStock")
-    public boolean chkAndModifyStock(@RequestParam("bookId") Long bookId,
-                                        @RequestParam("qty") int qty);
+@FeignClient(name="Product", url="${api.url.product}", fallbackFactory = ProductServiceFallbackFactory.class)
+public interface ProductService {
+    @RequestMapping(method= RequestMethod.GET, path="/products/checkAndModifyStock")
+    public boolean checkAndModifyStock(@RequestParam("productId") Long productId,
+                                    @RequestParam("qty") int qty);
 
 }
 ```
 
-- 주문을 받은 직후 재고(Book) 확인을 요청하도록 처리
+- 주문을 받은 직후 재고(Product) 확인을 요청하도록 처리
 ```
-# BookController.java
+# ProductController.java
 
-package onlinebookstore;
+package martdelivery;
 
- @RestController
- public class BookController {
-     @Autowired  BookRepository bookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-     @RequestMapping(value = "/books/chkAndModifyStock",
-             method = RequestMethod.GET,
-             produces = "application/json;charset=UTF-8")
-     public boolean chkAndModifyStock(@RequestParam("bookId") Long bookId,
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+ public class ProductController {
+     @Autowired  ProductRepository productRepository;
+
+     @RequestMapping(value = "/products/checkAndModifyStock",
+          method = RequestMethod.GET,
+          produces = "application/json;charset=UTF-8")
+     public boolean chkAndModifyStock(@RequestParam("productId") Long productId,
                                       @RequestParam("qty")  int qty)
              throws Exception {
-             
+
+         System.out.println("##### /products/checkAndModifyStock  called #####");
          boolean status = false;
-         Optional<Book> bookOptional = bookRepository.findByBookId(bookId);
-         if (bookOptional.isPresent()) {
-            Book book = bookOptional.get();
-            // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
-            if( book.getStock() >= qty){
-                status = true;
-                book.setStockBeforeUpdate(book.getStock());
-                book.setStock(book.getStock() - qty); // 주문수량만큼 재고 감소
-                bookRepository.save(book);
+         Optional<Product> productOptional = productRepository.findByProductId(productId);
+         if (productOptional.isPresent()) {
+             Product product = productOptional.get();
+             // 현 재고보다 주문수량이 적거나 같은경우에만 true 회신
+             if( product.getQty() >= qty){
+                 status = true;
+                 product.setStockBeforeUpdate(product.getQty());
+                 product.setQty(product.getQty() - qty); // 주문수량만큼 재고 감소
+                 productRepository.save(product);
+             }
          }
-      }
-
-      return status;
-  }
-
+         return status;
+     }
+     
 ```
 
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 재고 관리 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 상품 관리 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
 
 
 ```
-# 책 재고 관리 (Book) 서비스를 잠시 내려놓음 (ctrl+c)
+# 상품 관리 (Product) 서비스를 잠시 내려놓음 (ctrl+c)
 
 #주문처리
-http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Fail
-http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Fail
+http POST http://localhost:8088/orders  customerId=1 productId=2 qty=1   #Fail
+http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Fail
 
 #재고 관리 서비스 재기동
-cd Book
+cd Product
 mvn spring-boot:run
 
 #주문처리
-http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Success
-http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
+
+http POST http://localhost:8088/orders  customerId=1 productId=2 qty=1   #Success
+http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Success 
 ```
-추후 운영단계에서는 Circuit Breaker를 이용하여 재고 관리 시스템에 장애가 발생하여도 주문 접수는 가능하도록 개선할 예정이다.
+추후 운영단계에서는 Circuit Breaker를 이용하여 상품 관리 시스템에 장애가 발생하여도 주문 접수는 가능하도록 개선할 예정이다.
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
@@ -639,13 +661,18 @@ http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
 - 이를 위하여 주문이력에 기록을 남긴 후에 곧바로 주문이 완료되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-package onlinebookstore;
+package martdelivery;
+
+import javax.persistence.*;
+import org.springframework.beans.BeanUtils;
+import java.util.Date;
 
 @Entity
 @Table(name="Order_table")
 public class Order {
 
  ...
+
     @PostPersist
     public void onPostPersist(){
         if(this.status.equals("Ordered"))
@@ -663,13 +690,15 @@ public class Order {
             System.out.println("** PUB :: OutOfStocked : orderId="+this.orderId);
         }
     }
+ 
+ ...
 
 }
 ```
 - 배송관리 서비스에서는 주문 완료 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
-package onlinebookstore;
+package martdelivery;
 
 ...
 
@@ -678,19 +707,19 @@ public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverOrdered_Delivery(@Payload Ordered ordered){
-
         if(!ordered.validate()) return;
-
         System.out.println("\n\n##### listener Delivery : " + ordered.toJson() + "\n\n");
-
         Delivery delivery = new Delivery();
         
-        delivery.setOrderid(ordered.getOrderId());
-        delivery.setDeliverystatus("Order-Delivery");         
-        
+        delivery.setOrderId(ordered.getOrderId());
+        delivery.setProductId(ordered.getProductId());
+        delivery.setAddress(ordered.getAddress());
+        delivery.setQty(ordered.getQty());
+        delivery.setStatus("Order-Delivery");
+
         deliveryRepository.save(delivery);
-            
     }
+
 }
 
 ```
@@ -700,18 +729,18 @@ public class PolicyHandler{
 # 배송관리 서비스 (Delivery) 를 잠시 내려놓음 (ctrl+c)
 
 #주문처리
-http POST localhost:8088/orders bookId=1 qty=10 customerId=1   #Success
-http POST localhost:8088/orders bookId=2 qty=20 customerId=2   #Success
+http POST http://localhost:8088/orders  customerId=2 productId=1 qty=2   #Success
+http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Success 
 
 #주문상태 확인
-http localhost:8088/orders     # 주문상태 안바뀜 확인
+http http://localhost:8088/orders     # 주문상태 안바뀜 확인
 
 #배송 서비스 기동
 cd Delivery
 mvn spring-boot:run
 
 #주문상태 확인
-http localhost:8080/orders     # 모든 주문의 상태가 "Delivery Started"로 확인
+http http://localhost:8088/orders     # 모든 주문의 상태가 "Delivery Started"로 확인
 ```
 
 
