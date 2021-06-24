@@ -945,27 +945,27 @@ bookId가 1번 인 경우 정상적으로 주문 처리 완료
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=1 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123231413-24987c00-d513-11eb-91fe-49507a9d33bf.png)
+![image](https://user-images.githubusercontent.com/84316082/123257610-5b7b8b80-d52d-11eb-9a5d-04a4bfa3ae6a.png)
 
 bookId가 2번 인 경우 CB에 의한 timeout 발생 확인 (Order건은 OutOfStocked 처리됨)
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=2 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123231573-48f45880-d513-11eb-90ef-ce9a4563752a.png)
+![image](https://user-images.githubusercontent.com/84316082/123257734-8534b280-d52d-11eb-939f-aed39597c35c.png)
 
-time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
+time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Product 호출이 아예 차단된 것을 확인 (테스트를 위해 circuitBreaker.requestVolumeThreshold=1 로 설정)
 
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123231625-56a9de00-d513-11eb-9652-33d0bcfcbefb.png)
+![image](https://user-images.githubusercontent.com/84316082/123257401-0fc8e200-d52d-11eb-89ba-dde143c3f4ed.png)
 
 
 일정시간 뒤에는 다시 주문이 정상적으로 수행되는 것을 알 수 있다.
 ```
 # http POST http://52.231.54.4:8080/orders  customerId=1 productId=3 qty=1
 ```
-![image](https://user-images.githubusercontent.com/84316082/123231785-793bf700-d513-11eb-9496-fa188f6fd942.png)
+![image](https://user-images.githubusercontent.com/84316082/123257336-fd4ea880-d52c-11eb-9607-9268918828c5.png)
 
 
 - 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 Thread 자원 등을 보호하고 있음을 보여줌.
@@ -979,7 +979,8 @@ time 아웃이 연달아 2번 발생한 경우 CB가 OPEN되어 Book 호출이 �
 ```
 hpa.yml
 ```
-![image](https://user-images.githubusercontent.com/20077391/120973949-8aaea080-c7aa-11eb-80ce-eccb3c8cbc0d.png)
+![image](https://user-images.githubusercontent.com/84316082/123257176-c8daec80-d52c-11eb-9ad8-7600df025ade.png)
+
 
 - deployment.yml에 resource 관련 설정을 추가해 준다.
 ```
@@ -1004,8 +1005,8 @@ kubectl get deploy -l app=order -w
 
 
 - siege 의 로그를 보면 오토스케일 확장이 일어나며 주문을 100% 처리완료한 것을 알 수 있었다.
+![image](https://user-images.githubusercontent.com/84316082/123257002-916c4000-d52c-11eb-8620-33fad25f2620.png)
 
-![image](https://user-images.githubusercontent.com/84316082/123237254-77c0fd80-d518-11eb-8c7b-2a68fb84504b.png)
 
 
 
