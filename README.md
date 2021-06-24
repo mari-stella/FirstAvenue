@@ -400,10 +400,13 @@ http GET http://localhost:8088/myPages
 
 ## Saga
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
+
 [Publish]
+
 ![image](https://user-images.githubusercontent.com/84316082/123169413-3c8ce300-d4b4-11eb-9058-6953077c7ae1.png)
 
 [Subscribe]
+
 ![image](https://user-images.githubusercontent.com/84316082/123169558-66460a00-d4b4-11eb-9cae-6c7a0db7c863.png)
 
 
@@ -750,11 +753,11 @@ http http://localhost:8088/orders     # 모든 주문의 상태가 "Delivery Sta
 
 - git에서 소스 가져오기
 ```
-git clone https://github.com/aramidhwan/OnlineBookStore.git
+git clone https://github.com/mari-stella/FirstAvenue.git
 ```
 - Build 하기
 ```
-cd /book
+cd /product
 mvn package
 
 cd ../customer
@@ -781,9 +784,9 @@ cd ../gateway
 docker build -t skccteam2acr.azurecr.io/gateway:latest .
 docker push skccteam2acr.azurecr.io/gateway:latest
 
-cd ../book
-docker build -t skccteam2acr.azurecr.io/book:latest .
-docker push skccteam2acr.azurecr.io/book:latest
+cd ../product
+docker build -t skccteam2acr.azurecr.io/product:latest .
+docker push skccteam2acr.azurecr.io/product:latest
 
 cd ../customer
 docker build -t skccteam2acr.azurecr.io/customer:latest .
@@ -808,12 +811,12 @@ docker push skccteam2acr.azurecr.io/delivery:latest
 ```
 kubectl apply -f deployment.yml
 
-- OnlineBookStore/Order/kubernetes/deployment.yml 파일 
+- martdelivery/Order/kubernetes/deployment.yml 파일 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: order
-  namespace: onlinebookstore
+  namespace: martdelivery
   labels:
     app: order
 spec:
@@ -869,24 +872,22 @@ spec:
 
 ## ConfigMap 
 - 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리
-- OnlineBookStore에서는 주문에서 책 재고 서비스 호출 시 "호출 주소"를 ConfigMap 처리하기로 결정
+- 본 시스템에서는 주문에서 상품 서비스 호출 시 "호출 주소"를 ConfigMap 처리하기로 결정
 
-- Java 소스에 "호출 주소"를 변수(api.url.book) 처리(/Order/src/main/java/onlinebookstore/external/BookService.java) 
+- Java 소스에 "호출 주소"를 변수(api.url.product) 처리(/Order/src/main/java/martdelivery/external/ProductService.java) 
 
-
-![image](https://user-images.githubusercontent.com/20077391/120964977-24705080-c79f-11eb-8e5b-be9f8e6d2128.png)
-
-
-- application.yml 파일에서 api.url.book을 ConfigMap과 연결
+![image](https://user-images.githubusercontent.com/84316082/123186441-19bdf700-d4d3-11eb-96ec-ce2082afb19d.png)
 
 
-![image](https://user-images.githubusercontent.com/20077391/120963090-f0dff700-c79b-11eb-88b4-247efe73a301.png)
+- application.yml 파일에서 api.url.product ConfigMap과 연결
+
+![image](https://user-images.githubusercontent.com/84316082/123186601-74efe980-d4d3-11eb-8bbe-a4001dbda93a.png)
 
 
 - ConfigMap 생성
 
 ```
-kubectl create configmap resturl --from-literal=url=http://Book:8080
+kubectl create configmap resturl --from-literal=url=http://Product:8080
 ```
 
 - Deployment.yml 에 ConfigMap 적용
@@ -897,22 +898,22 @@ kubectl create configmap resturl --from-literal=url=http://Book:8080
 ## Secret 
 - DBMS 연결에 필요한 username 및 password는 민감한 정보이므로 Secret 처리하였다.
 
-![image](https://user-images.githubusercontent.com/20077391/121105591-59cc7b00-c83f-11eb-96b7-e9649498fdf2.png)
+![image](https://user-images.githubusercontent.com/84316082/123190991-7f15e600-d4db-11eb-84e7-bd56aa029fd9.png)
 
 - deployment.yml에서 env로 설정하였다.
 
-![image](https://user-images.githubusercontent.com/20077391/121105685-841e3880-c83f-11eb-9c3e-645f4a21cb8a.png)
+![image](https://user-images.githubusercontent.com/84316082/123191183-d1570700-d4db-11eb-8b03-03ad81956a95.png)
 
 - 쿠버네티스에서는 다음과 같이 Secret object를 생성하였다.
 
-![image](https://user-images.githubusercontent.com/20077391/121105756-a9ab4200-c83f-11eb-902a-bc276651bf7b.png)
+![image](https://user-images.githubusercontent.com/84316082/123191851-d23c6880-d4dc-11eb-81ad-80c57c07fcb6.png)
 
 
 ## Circuit Breaker와 Fallback 처리
 
 * Spring FeignClient + Hystrix를 사용하여 구현함
 
-시나리오는 주문(Order)-->재고(Book) 확인 시 주문 요청에 대한 재고확인이 3초를 넘어설 경우 Circuit Breaker 를 통하여 장애격리.
+시나리오는 주문(Order)-->상품(Product) 확인 시 주문 요청에 대한 재고확인이 3초를 넘어설 경우 Circuit Breaker 를 통하여 장애격리.
 
 - Hystrix 를 설정:  FeignClient 요청처리에서 처리시간이 3초가 넘어서면 CB가 동작하도록 (요청을 빠르게 실패처리, 차단) 설정
                     추가로, 테스트를 위해 1번만 timeout이 발생해도 CB가 발생하도록 설정
