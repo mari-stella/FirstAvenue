@@ -432,6 +432,7 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 
 ## Correlation 
 각 이벤트 건(메시지)이 어떤 Policy를 처리할 때 어떤건에 연결된 처리건인지를 구별하기 위한 Correlation-key를 제대로 연결하였는지를 검증하였다.
+
 ![image](https://user-images.githubusercontent.com/84316082/123184000-bed5d100-d4cd-11eb-9fba-3d6e11b64208.png)
 
 
@@ -918,24 +919,23 @@ kubectl create configmap resturl --from-literal=url=http://Product:8080
 - Hystrix 를 설정:  FeignClient 요청처리에서 처리시간이 3초가 넘어서면 CB가 동작하도록 (요청을 빠르게 실패처리, 차단) 설정
                     추가로, 테스트를 위해 1번만 timeout이 발생해도 CB가 발생하도록 설정
 ```
-# application.yml
+# (Order) application.yml
 ```
-![image](https://user-images.githubusercontent.com/20077391/120970089-ed516d80-c7a5-11eb-8abb-d57cdbf77065.png)
+![image](https://user-images.githubusercontent.com/84316082/123192320-9eae0e00-d4dd-11eb-9e02-04f7adc2938e.png)
 
 
 - 호출 서비스(주문)에서는 재고API 호출에서 문제 발생 시 주문건을 OutOfStock 처리하도록 FallBack 구현
 ```
-# (Order) BookService.java 
+# (Order) ProductService.java 
 ```
-![image](https://user-images.githubusercontent.com/20077391/121100878-b034bc00-c835-11eb-97de-2bec90b7f3b0.png)
+![image](https://user-images.githubusercontent.com/84316082/123192807-960a0780-d4de-11eb-8072-0dbf886cee7c.png)
 
 
-- 피호출 서비스(책재고:Book)에서 테스트를 위해 bookId가 2인 주문건에 대해 sleep 처리
+- 피호출 서비스(상품:Product)에서 테스트를 위해 productId 2인 주문건에 대해 sleep 처리
 ```
-# (Book) BookController.java 
+# (Product) ProductController.java 
 ```
-![image](https://user-images.githubusercontent.com/20077391/120971537-b54b2a00-c7a7-11eb-9595-8fa8cb444be5.png)
-
+![image](https://user-images.githubusercontent.com/84316082/123201232-36672880-d4ed-11eb-95b8-ff019ab397bf.png)
 
 
 * 서킷 브레이커 동작 확인:
