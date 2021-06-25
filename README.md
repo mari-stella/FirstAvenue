@@ -302,13 +302,24 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 - 적용 후 REST API 의 테스트
 ```
 # Order 서비스의 주문처리
-http POST http://localhost:8088/orders orderId=1 customerId=1 productId=1 qty=1 
+http POST http://localhost:8088/orders customerId=1 productId=1 qty=1 
+![image](https://user-images.githubusercontent.com/84316082/123356404-a08dd500-d5a2-11eb-8e9b-e405d9718ab8.png)
+
 
 # Product 서비스의 재입고
-http PATCH http://localhost:8088/products/reStock productId=1  stock=1000
+http PATCH http://localhost:8088/products/reStock productId=1  qty=1000
+- 재입고 전
+![image](https://user-images.githubusercontent.com/84316082/123356535-d92dae80-d5a2-11eb-90ac-644a554f0383.png)
+- 재입고
+![image](https://user-images.githubusercontent.com/84316082/123356596-f498b980-d5a2-11eb-9a75-487f2cf832c3.png)
+- 재입고 후
+![image](https://user-images.githubusercontent.com/84316082/123356654-142fe200-d5a3-11eb-946a-e56d65d6ee2e.png)
+
 
 # 주문 상태 확인
 http GET http://localhost:8088/myPages
+![image](https://user-images.githubusercontent.com/84316082/123356740-3aee1880-d5a3-11eb-8e37-7128cefbd9a6.png)
+
 
 ```
 
