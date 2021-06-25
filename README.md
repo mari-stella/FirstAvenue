@@ -391,7 +391,8 @@ http GET http://localhost:8088/myPages
 
 --> EMAIL이 발송됨을 확인하였음 
 
-![image](https://user-images.githubusercontent.com/84316082/123155686-5c67db00-d4a3-11eb-8009-1dc1ebf69745.png)
+![image](https://user-images.githubusercontent.com/84316082/123358054-b3ee6f80-d5a5-11eb-999e-f5aa14e2db1c.png)
+![image](https://user-images.githubusercontent.com/84316082/123358080-c23c8b80-d5a5-11eb-8d7c-cbaf695efaab.png)
 
 
 ## 비기능적 요구사항 검증
@@ -409,10 +410,12 @@ http GET http://localhost:8088/myPages
 2. 장애격리
 고객/고객센터/배달 관리 기능이 수행되지 않더라도 주문은 365일 24시간 받을 수 있어야 한다 Async (event-driven), Eventual Consistency
 
---> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
+--> Customer/CustomerCenter/Delivery 서비스를 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
 
-![image](https://user-images.githubusercontent.com/84316082/123169288-0bacae00-d4b4-11eb-8aad-23bb6d3a506e.png)
-![image](https://user-images.githubusercontent.com/84316082/123169313-16674300-d4b4-11eb-8f2a-fcda625147a4.png)
+![image](https://user-images.githubusercontent.com/84316082/123358642-c1582980-d5a6-11eb-8dcd-ab042f89cf50.png)
+
+![image](https://user-images.githubusercontent.com/84316082/123358670-d03edc00-d5a6-11eb-8e41-0611efbe4fb9.png)
+
 
 
 
@@ -424,13 +427,16 @@ http GET http://localhost:8088/myPages
 ## Saga
 분석/설계 및 구현을 통해 이벤트를 Publish/Subscribe 하도록 구현하였다.
 
+![image](https://user-images.githubusercontent.com/84316082/123358922-4fccab00-d5a7-11eb-8351-17690935b135.png)
+
 [Publish]
 
-![image](https://user-images.githubusercontent.com/84316082/123169413-3c8ce300-d4b4-11eb-9058-6953077c7ae1.png)
+![image](https://user-images.githubusercontent.com/84316082/123358734-f4022200-d5a6-11eb-922e-66154b8b388c.png)
+
 
 [Subscribe]
 
-![image](https://user-images.githubusercontent.com/84316082/123169558-66460a00-d4b4-11eb-9cae-6c7a0db7c863.png)
+![image](https://user-images.githubusercontent.com/84316082/123358796-0c723c80-d5a7-11eb-9f51-c45bd4e2a368.png)
 
 
 ## CQRS
@@ -442,21 +448,18 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 
 - 주문(ordered) 실행 후 myPage 화면
 
-![image](https://user-images.githubusercontent.com/84316082/123170923-0e100780-d4b6-11eb-858a-50b1d17058bc.png)
+![image](https://user-images.githubusercontent.com/84316082/123359109-a0dc9f00-d5a7-11eb-9e21-af0e4ecb79f2.png)
+
 
 - 주문취소(OrderCancelled) 후 myPage 화면
 
-![image](https://user-images.githubusercontent.com/84316082/123170983-254ef500-d4b6-11eb-852a-cda6066f319d.png)
+![image](https://user-images.githubusercontent.com/84316082/123359134-ad60f780-d5a7-11eb-9afa-64d8efe0f244.png)
 
 
 위와 같이 주문을 하게되면 Order -> Product -> Order -> Delivery 로 주문이 Assigend 되고
 
 주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
 
-## Correlation 
-각 이벤트 건(메시지)이 어떤 Policy를 처리할 때 어떤건에 연결된 처리건인지를 구별하기 위한 Correlation-key를 제대로 연결하였는지를 검증하였다.
-
-![image](https://user-images.githubusercontent.com/84316082/123184000-bed5d100-d4cd-11eb-9fba-3d6e11b64208.png)
 
 
 ## GateWay 
