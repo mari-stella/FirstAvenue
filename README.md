@@ -767,21 +767,31 @@ public class PolicyHandler{
 배송 시스템은 주문/재고관리와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 배송 시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
 # 배송관리 서비스 (Delivery) 중지
-
+```
+![image](https://user-images.githubusercontent.com/84316082/123368639-23208f80-d5b7-11eb-92bf-f34919d8951e.png)
+```
 #주문처리
-http POST http://localhost:8088/orders  customerId=2 productId=1 qty=2   #Success
 http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Success 
+```
+![image](https://user-images.githubusercontent.com/84316082/123369491-ccb45080-d5b8-11eb-880e-2f62a1051c86.png)
 
+
+```
 #주문상태 확인
-http http://localhost:8088/orders     # 주문상태 안바뀜 확인
+http http://localhost:8088/orders/98     # 주문상태 안바뀜 확인
+```
+![image](https://user-images.githubusercontent.com/84316082/123369485-c9b96000-d5b8-11eb-828c-8bd31f2a7eda.png)
 
+```
 #배송 서비스 기동
 cd Delivery
 mvn spring-boot:run
-
-#주문상태 확인
-http http://localhost:8088/orders     # 모든 주문의 상태가 "Delivery Started"로 확인
 ```
+```
+#주문상태 확인
+http http://localhost:8088/orders/98     # 주문 상태 "Delivery Start"로 변경 확인
+```
+![image](https://user-images.githubusercontent.com/84316082/123369605-02f1d000-d5b9-11eb-9529-828eccef61f4.png)
 
 
 # 운영
