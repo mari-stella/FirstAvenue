@@ -768,7 +768,8 @@ public class PolicyHandler{
 ```
 # 배송관리 서비스 (Delivery) 중지
 ```
-![image](https://user-images.githubusercontent.com/84316082/123368639-23208f80-d5b7-11eb-92bf-f34919d8951e.png)
+![image](https://user-images.githubusercontent.com/84316082/123369819-77c50a00-d5b9-11eb-84af-4349f67c82af.png)
+
 ```
 #주문처리
 http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Success 
@@ -804,7 +805,7 @@ git clone https://github.com/mari-stella/FirstAvenue.git
 ```
 - Build 하기
 ```
-cd /product
+cd ../product
 mvn package
 
 cd ../customer
@@ -828,28 +829,28 @@ mvn package
 ```
 
 cd ../gateway
-docker build -t skccteam2acr.azurecr.io/gateway:latest .
-docker push skccteam2acr.azurecr.io/gateway:latest
+docker build -t user09acr.azurecr.io/gateway:latest .
+docker push user09acr.azurecr.io/gateway:latest
 
 cd ../product
-docker build -t skccteam2acr.azurecr.io/product:latest .
-docker push skccteam2acr.azurecr.io/product:latest
+docker build -t user09acr.azurecr.io/product:latest .
+docker push user09acr.azurecr.io/product:latest
 
 cd ../customer
-docker build -t skccteam2acr.azurecr.io/customer:latest .
-docker push skccteam2acr.azurecr.io/customer:latest
+docker build -t user09acr.azurecr.io/customer:latest .
+docker push user09acr.azurecr.io/customer:latest
 
 cd ../customercenter
-docker build -t skccteam2acr.azurecr.io/customercenter:latest .
-docker push skccteam2acr.azurecr.io/customercenter:latest
+docker build -t user09acr.azurecr.io/customercenter:latest .
+docker push user09acr.azurecr.io/customercenter:latest
 
 cd ../order
-docker build -t skccteam2acr.azurecr.io/order:latest .
-docker push skccteam2acr.azurecr.io/order:latest
+docker build -t user09acr.azurecr.io/order:latest .
+docker push user09acr.azurecr.io/order:latest
 
 cd ../delivery
-docker build -t skccteam2acr.azurecr.io/delivery:latest .
-docker push skccteam2acr.azurecr.io/delivery:latest
+docker build -t user09acr.azurecr.io/delivery:latest .
+docker push user09acr.azurecr.io/delivery:latest
 
 
 ```
@@ -912,9 +913,10 @@ spec:
               # memory: 256Mi
 ```	  
 
-- deploy 완료
+- deploy 완료 (자료는 최종 상태)
 
-![image](https://user-images.githubusercontent.com/20077391/121022073-fc9fdd80-c7dc-11eb-9f50-962556056728.png)
+![image](https://user-images.githubusercontent.com/84316082/123370365-895ae180-d5ba-11eb-9b3d-3e552ae8afa6.png)
+
 
 
 ## ConfigMap 
@@ -936,6 +938,8 @@ spec:
 ```
 kubectl create configmap resturl --from-literal=url=http://Product:8080
 ```
+![image](https://user-images.githubusercontent.com/84316082/123370422-a7c0dd00-d5ba-11eb-96e9-c06ec6e4f84a.png)
+
 
 - Deployment.yml 에 ConfigMap 적용
 
@@ -952,9 +956,21 @@ kubectl create configmap resturl --from-literal=url=http://Product:8080
 ![image](https://user-images.githubusercontent.com/84316082/123191183-d1570700-d4db-11eb-8b03-03ad81956a95.png)
 
 - 쿠버네티스에서는 다음과 같이 Secret object를 생성하였다.
+```
+# secret.yml
 
-![image](https://user-images.githubusercontent.com/84316082/123191851-d23c6880-d4dc-11eb-81ad-80c57c07fcb6.png)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sqlserver-basic-auth
+  namespace: martdelivery
+type: kubernetes.io/basic-auth
+stringData:
+  username: user09
+  password: ****
+```
 ![image](https://user-images.githubusercontent.com/84316082/123230778-899fa200-d512-11eb-8aa2-e82c1dd834d5.png)
+
 
 ## Circuit Breaker와 Fallback 처리
 
