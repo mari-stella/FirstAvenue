@@ -664,8 +664,9 @@ import java.util.Optional;
 
 ```
 # 상품 관리 (Product) 서비스를 잠시 내려놓음 (ctrl+c)
+```
 ![image](https://user-images.githubusercontent.com/84316082/123263330-cfb92d80-d533-11eb-9429-f1702ebec27d.png)
-
+```
 #주문처리
 - Fallback 처리로 인해 status가 OutOfStocked 로 보여짐(주문실패)
 ```
