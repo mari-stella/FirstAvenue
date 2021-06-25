@@ -339,42 +339,45 @@ http GET http://localhost:8088/myPages
 
 --> 정상적으로 주문됨을 확인하였음 
 
-![image](https://user-images.githubusercontent.com/84316082/123159460-00ec1c00-d4a8-11eb-946a-bc98e9fdcdb7.png)
+![image](https://user-images.githubusercontent.com/84316082/123357450-7dfcbb80-d5a4-11eb-9530-3c8938ca274a.png)
+
 
 2. 주문이 성공하면 배송을 시작한다.
 
 --> 정상적으로 배송 시작됨을 확인하였음 
 
-![image](https://user-images.githubusercontent.com/84316082/123161103-f92d7700-d4a9-11eb-8ed0-00661953c6d9.png)
+![image](https://user-images.githubusercontent.com/84316082/123357481-8ce36e00-d5a4-11eb-9db0-d7e7f1c478b4.png)
+
 
 
 3. 고객이 주문을 취소할 수 있다.
 
 --> 정상적으로 취소됨을 확인하였음 
 
-![image](https://user-images.githubusercontent.com/84316082/123162383-80c7b580-d4ab-11eb-8fe1-e7e955946e4f.png)
+![image](https://user-images.githubusercontent.com/84316082/123357517-9a98f380-d5a4-11eb-9f4e-59edf9f36273.png)
 
 
 4. 주문이 취소되면 배송을 취소한다.
 
---> 주문과 배송 시스템에서 각각 취소되었음을 확인하였음 
+--> 배송 시스템에서 해당 주문의 배달이 취소되었음을 확인하였음 
 
-![image](https://user-images.githubusercontent.com/84316082/123162394-86bd9680-d4ab-11eb-929a-075db473059e.png)
+![image](https://user-images.githubusercontent.com/84316082/123357588-c3b98400-d5a4-11eb-8060-b13855d00d47.png)
 
 
 5. 관리자가 신규 상품을 등록한다.
 
 --> 정상적으로 등록됨을 확인하였음
 
-![image](https://user-images.githubusercontent.com/84316082/123150399-47884900-d49d-11eb-9883-6dfa3632353d.png)
+![image](https://user-images.githubusercontent.com/84316082/123357674-f6637c80-d5a4-11eb-8bdd-d650fa69ac4d.png)
+
 
 
 6. 관리자가 상품 재고를 추가한다.
 
 --> 정상적으로 재고가 늘어남을 확인하였음
 
-![image](https://user-images.githubusercontent.com/84316082/123150634-90400200-d49d-11eb-80ca-5d1febf91222.png)
-![image](https://user-images.githubusercontent.com/84316082/123150697-9e8e1e00-d49d-11eb-8ddb-9abde294b894.png)
+![image](https://user-images.githubusercontent.com/84316082/123357739-15faa500-d5a5-11eb-996a-fe552c02878e.png)
+
 
 
 7. 고객은 회원가입을 한다.
@@ -399,8 +402,7 @@ http GET http://localhost:8088/myPages
 
 --> 재고보다 많은 양(qty)을 주문하였을 경우 OutOfStock으로 처리한다.
 
-![image](https://user-images.githubusercontent.com/84316082/123158296-91296180-d4a6-11eb-8c64-9c3135245b81.png)
-![image](https://user-images.githubusercontent.com/84316082/123158316-99819c80-d4a6-11eb-8c54-19e2c572ec8b.png)
+![image](https://user-images.githubusercontent.com/84316082/123357849-4a6e6100-d5a5-11eb-91f7-23e14f1b1f25.png)
 
 
 
@@ -409,7 +411,7 @@ http GET http://localhost:8088/myPages
 
 --> 고객/고객센터/배달 마이크로서비스를 모두 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
 
-![image](https://user-images.githubusercontent.com/84316082/123169288-0bacae00-d4b4-11eb-8aad-23bb6d3a506e.png
+![image](https://user-images.githubusercontent.com/84316082/123169288-0bacae00-d4b4-11eb-8aad-23bb6d3a506e.png)
 ![image](https://user-images.githubusercontent.com/84316082/123169313-16674300-d4b4-11eb-8f2a-fcda625147a4.png)
 
 
