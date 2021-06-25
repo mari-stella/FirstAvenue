@@ -663,13 +663,12 @@ import java.util.Optional;
 
 
 ```
-# 상품 관리 (Product) 서비스를 잠시 내려놓음 (ctrl+c)
+# 상품(Product) 서비스 중지상태
 ```
 ![image](https://user-images.githubusercontent.com/84316082/123263330-cfb92d80-d533-11eb-9429-f1702ebec27d.png)
 ```
-#주문처리
+# 주문(Order) 처리
 - Fallback 처리로 인해 status가 OutOfStocked 로 보여짐(주문실패)
-```
 http POST http://localhost:8088/orders  customerId=1 productId=2 qty=1   #Fail
 ```
 ![image](https://user-images.githubusercontent.com/84316082/123263101-9254a000-d533-11eb-8d70-1ef237c7b697.png)
@@ -678,17 +677,19 @@ http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Fail
 ```
 ![image](https://user-images.githubusercontent.com/84316082/123263159-a1d3e900-d533-11eb-9a24-d0ca5a6b975a.png)
 
-
-#재고 관리 서비스 재기동
+```
+# 상품 서비스 재기동
 cd Product
 mvn spring-boot:run
-
-#주문처리
-
-http POST http://localhost:8088/orders  customerId=1 productId=2 qty=1   #Success
-http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Success 
 ```
-추후 운영단계에서는 Circuit Breaker를 이용하여 상품 관리 시스템에 장애가 발생하여도 주문 접수는 가능하도록 개선할 예정이다.
+```
+#주문(Order) 처리
+http POST http://localhost:8088/orders  customerId=1 productId=1 qty=1   #Success
+http POST http://localhost:8088/orders  customerId=3 productId=3 qty=1   #Success 
+```
+![image](https://user-images.githubusercontent.com/84316082/123362010-f797a800-d5aa-11eb-9400-6e50aeddad19.png)
+![image](https://user-images.githubusercontent.com/84316082/123362061-0da56880-d5ab-11eb-849b-20a797e353f3.png)
+ 
 
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
@@ -696,7 +697,9 @@ http POST http://localhost:8088/orders  customerId=3 productId=1 qty=1   #Succes
 주문이 이루어진 후에 배송 시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리하여 배송 시스템의 처리를 위하여 주문이 블로킹 되지 않도록 처리한다.
  
 - 이를 위하여 주문이력에 기록을 남긴 후에 곧바로 주문이 완료되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
- 
+
+![image](https://user-images.githubusercontent.com/84316082/123362261-5e1cc600-d5ab-11eb-8b5b-35fffc9b4f96.png)
+
 ```
 package martdelivery;
 
@@ -763,7 +766,7 @@ public class PolicyHandler{
 
 배송 시스템은 주문/재고관리와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 배송 시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
 ```
-# 배송관리 서비스 (Delivery) 를 잠시 내려놓음 (ctrl+c)
+# 배송관리 서비스 (Delivery) 중지
 
 #주문처리
 http POST http://localhost:8088/orders  customerId=2 productId=1 qty=2   #Success
