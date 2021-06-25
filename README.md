@@ -1121,7 +1121,7 @@ martdelivery/Delivery/kubernetes/deployment.yml
 ![image](https://user-images.githubusercontent.com/84316082/123254979-47825a80-d52a-11eb-8bea-17038be3e535.png)
 ![image](https://user-images.githubusercontent.com/84316082/123282839-cf299280-d545-11eb-9a8f-f976a983c8c9.png)
 
-- Liveness 확인 실패에 따른 retry발생 확인
+- Liveness 확인 실패에 따른 restart 발생 확인
 
 ![image](https://user-images.githubusercontent.com/84316082/123255713-2110ef00-d52b-11eb-9c6e-3eb243872889.png)
 
