@@ -456,10 +456,6 @@ CQRS를 구현하여 주문건에 대한 상태는 Order 마이크로서비스�
 ![image](https://user-images.githubusercontent.com/84316082/123359134-ad60f780-d5a7-11eb-9afa-64d8efe0f244.png)
 
 
-위와 같이 주문을 하게되면 Order -> Product -> Order -> Delivery 로 주문이 Assigend 되고
-
-주문 취소가 되면 Status가 "Delivery Cancelled"로 Update 되는 것을 볼 수 있다.
-
 
 
 ## GateWay 
