@@ -304,7 +304,8 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 # Order 서비스의 주문처리
 http POST http://localhost:8088/orders customerId=1 productId=1 qty=1 
 ```
-![image](https://user-images.githubusercontent.com/84316082/123356404-a08dd500-d5a2-11eb-8e9b-e405d9718ab8.png)
+![image](https://user-images.githubusercontent.com/84316082/123357223-1e061500-d5a4-11eb-8e1a-f1a11140190a.png)
+
 
 ```
 # Product 서비스의 재입고
@@ -316,7 +317,8 @@ http PATCH http://localhost:8088/products/reStock productId=1  qty=1000
 
 - 재입고
 
-![image](https://user-images.githubusercontent.com/84316082/123356596-f498b980-d5a2-11eb-9a75-487f2cf832c3.png)
+![image](https://user-images.githubusercontent.com/84316082/123357310-3e35d400-d5a4-11eb-8f62-2363dd8324a1.png)
+
 
 - 재입고 후
 
@@ -329,7 +331,7 @@ http GET http://localhost:8088/myPages
 ![image](https://user-images.githubusercontent.com/84316082/123356740-3aee1880-d5a3-11eb-8e37-7128cefbd9a6.png)
 
 
-```
+
 
 ## 기능적 요구사항 검증
 
