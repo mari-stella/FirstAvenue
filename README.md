@@ -1103,6 +1103,7 @@ kubectl set image deployment customer customer=user09acr.azurecr.io/customer:v2.
 
 
 - seige 의 화면으로 넘어가서 Availability가 100% 인지 확인 (무정지 배포 성공)
+
 ![image](https://user-images.githubusercontent.com/84316082/123256561-1014ad80-d52c-11eb-85cc-3859703f647b.png)
 
 
@@ -1127,4 +1128,4 @@ martdelivery/Delivery/kubernetes/deployment.yml
 
 이상으로 12가지 체크포인트가 구현 및 검증 완료되었음 확인하였다.
 
-# 끗~
+# 감사합니다.
