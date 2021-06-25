@@ -412,7 +412,7 @@ http GET http://localhost:8088/myPages
 
 --> Customer/CustomerCenter/Delivery 서비스를 내리고 주문을 생성했을때, 정상적으로 주문됨을 확인함
 
-![image](https://user-images.githubusercontent.com/84316082/123358642-c1582980-d5a6-11eb-8dcd-ab042f89cf50.png)
+![image](https://user-images.githubusercontent.com/84316082/123361349-da160e80-d5a9-11eb-829a-914c46bcdf5a.png)
 
 ![image](https://user-images.githubusercontent.com/84316082/123358670-d03edc00-d5a6-11eb-8e41-0611efbe4fb9.png)
 
